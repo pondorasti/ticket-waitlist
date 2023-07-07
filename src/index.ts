@@ -18,6 +18,9 @@ const SHOWTIMES = [
   // 111717815, // Oppenheimer Thursday laser
 ];
 
+// we won't check if they're next to each other, but also won't alert if there's only one seat available
+const MIN_AVAILABLE_SEATS = 2;
+
 // idk if rate limiting is a thing, but let's not test it
 const WAIT_BETWEEN_CHECKS = 3000;
 
@@ -102,9 +105,9 @@ async function checkForSeats() {
             IMAX_ROWS.includes(s.name[0])
         );
 
-      const label = `${response.data.viewer.showtime.movie.name} ${response.data.viewer.showtime.display.date} at ${response.data.viewer.showtime.display.time}${response.data.viewer.showtime.display.amPm}`;
+      const label = `${response.data.viewer.showtime.movie.name} - ${response.data.viewer.showtime.display.date} at ${response.data.viewer.showtime.display.time}${response.data.viewer.showtime.display.amPm}`;
 
-      if (availableSeats.length > 0) {
+      if (availableSeats.length >= MIN_AVAILABLE_SEATS) {
         SHOWTIMES_WITH_SEATS.push(label);
         console.log(
           `${response.data.viewer.showtime.display.date} ${response.data.viewer.showtime.display.time} has ${availableSeats.length} seats available`
