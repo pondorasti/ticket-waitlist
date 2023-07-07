@@ -11,7 +11,11 @@ import twilio from 'twilio';
 const SHOWTIMES = [
   111490819, // Oppenheimer Thursday 5pm
   111490820, // Oppenheimer Thursday 9:45pm
-  111717815, // Oppenheimer Thursday laser
+  111442606, // Oppenheimer Tuesday 8:15pm
+  111442603, // Oppenheimer Wednesday 8:15pm
+
+  // can use this for testing
+  // 111717815, // Oppenheimer Thursday laser
 ];
 
 // idk if rate limiting is a thing, but let's not test it
@@ -20,6 +24,11 @@ const WAIT_BETWEEN_CHECKS = 3000;
 const TEXT_MAX_FREQUENCY = 1000 * 60 * 30; // 30 minutes
 const TWILIO_FROM_NUMBER = '+18335631518';
 const TWILIO_TO_NUMBER = '+18144107394';
+
+// seat names are H12, H13, etc.
+// this is only guaranteed to work for the AMC CityWalk IMAX theater,
+// I don't want to sit any further down than this
+const IMAX_ROWS = ['G', 'H', 'J', 'K', 'L', 'M', 'N'];
 
 /**
  * You probably don't need to change anything below this line
@@ -89,10 +98,11 @@ async function checkForSeats() {
             s.available &&
             s.seatStatus !== 'Sold' &&
             s.type !== 'NotASeat' &&
-            s.type !== 'Wheelchair'
+            s.type !== 'Wheelchair' &&
+            IMAX_ROWS.includes(s.name[0])
         );
 
-      const label = `Showtime: ${response.data.viewer.showtime.movie.name} ${response.data.viewer.showtime.display.date} at ${response.data.viewer.showtime.display.time}${response.data.viewer.showtime.display.amPm}`;
+      const label = `${response.data.viewer.showtime.movie.name} ${response.data.viewer.showtime.display.date} at ${response.data.viewer.showtime.display.time}${response.data.viewer.showtime.display.amPm}`;
 
       if (availableSeats.length > 0) {
         SHOWTIMES_WITH_SEATS.push(label);
