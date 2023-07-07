@@ -1,6 +1,7 @@
 {
   "name": "amc-seat-checker",
   "version": "0.1.0",
+  "license": "MIT",
   "scripts": {
     "start": "tsx src/index.ts"
   },
@@ -11,7 +12,7 @@
     "trailingComma": "es5"
   },
   "engines": {
-    "node": ">=20"
+    "node": "18"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
