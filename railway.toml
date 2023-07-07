@@ -2,4 +2,5 @@
 startCommand = "yarn start"
 healthcheckPath = "/"
 healthcheckTimeout = 100
-restartPolicyType = "never"
+restartPolicyType = "always"
+restartPolicyMaxRetries = 5
