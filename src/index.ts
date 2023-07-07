@@ -103,8 +103,6 @@ cron.schedule(`*/1 * * * *`, async () => {
 });
 
 app.get('/', async (req: Request, res: Response) => {
-  await checkForSeats();
-
   if (ERROR) {
     res.send('ERROR');
     return;
