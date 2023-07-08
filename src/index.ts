@@ -24,6 +24,9 @@ const MIN_AVAILABLE_SEATS = 2;
 // idk if rate limiting is a thing, but let's not test it
 const WAIT_BETWEEN_CHECKS = 3000;
 
+// wait until getting this many consecutive errors before creating an error state
+const MIN_ERROR_COUNT = 4;
+
 const TEXT_MAX_FREQUENCY = 1000 * 60 * 30; // 30 minutes
 const TWILIO_FROM_NUMBER = '+18335631518';
 const TWILIO_TO_NUMBER = '+18144107394';
@@ -78,15 +81,17 @@ function delay(ms: number) {
 
 let SHOWTIMES_WITH_SEATS: string[] = [];
 let LAST_TEXT_SENT_AT = 0;
+let ERROR_COUNT = 0;
 let ERROR = false;
 
 async function checkForSeats() {
   SHOWTIMES_WITH_SEATS = [];
   ERROR = false;
+  let response: AMC_Response;
 
   for (const showtimeId of SHOWTIMES) {
     try {
-      const response = (await fetch('https://graph.amctheatres.com', {
+      response = (await fetch('https://graph.amctheatres.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,9 +122,31 @@ async function checkForSeats() {
       await delay(WAIT_BETWEEN_CHECKS);
     } catch (error) {
       console.error(error);
-      ERROR = true;
+
+      if (error instanceof Error) {
+        if (
+          error.message.includes(
+            `Cannot read properties of null (reading 'filter')`
+          )
+        ) {
+          console.log(
+            'seatingLayout',
+            // @ts-ignore
+            response?.data.viewer.showtime.seatingLayout
+          );
+        }
+      }
+
+      ERROR_COUNT++;
+
+      if (ERROR_COUNT >= MIN_ERROR_COUNT) {
+        ERROR = true;
+        break;
+      }
     }
   }
+
+  ERROR_COUNT = 0;
 
   if (!SHOWTIMES_WITH_SEATS.length) {
     console.log('No seats found');
