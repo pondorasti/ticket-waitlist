@@ -117,6 +117,9 @@ async function checkForSeats() {
         console.log(
           `${response.data.viewer.showtime.display.date} ${response.data.viewer.showtime.display.time} has ${availableSeats.length} seats available`
         );
+        for (const seat of availableSeats) {
+          console.log(seat.name + ' - ' + seat.type + ' - ' + seat.seatStatus);
+        }
       }
 
       await delay(WAIT_BETWEEN_CHECKS);
