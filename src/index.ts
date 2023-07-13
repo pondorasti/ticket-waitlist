@@ -120,6 +120,9 @@ async function checkForSeats() {
         for (const seat of availableSeats) {
           console.log(seat.name + ' - ' + seat.type + ' - ' + seat.seatStatus);
         }
+
+        // don't bother checking other showtimes, send a text right away
+        break;
       }
 
       await delay(WAIT_BETWEEN_CHECKS);
@@ -152,6 +155,7 @@ async function checkForSeats() {
   ERROR_COUNT = 0;
 
   if (!SHOWTIMES_WITH_SEATS.length) {
+    LAST_TEXT_SENT_AT = 0;
     console.log('No seats found');
     return;
   }
