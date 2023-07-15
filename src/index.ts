@@ -65,7 +65,7 @@ interface AMC_Response {
             available: boolean;
             column: number;
             row: number;
-            type: 'NotASeat' | 'CanReserve' | 'Wheelchair';
+            type: 'NotASeat' | 'CanReserve' | 'Wheelchair' | 'Companion';
             name: string; // e.g. A29
             seatStatus: string; // "Sold"
           }[];
@@ -100,15 +100,24 @@ async function checkForSeats() {
         }),
       }).then((res) => res.json())) as AMC_Response;
 
-      const availableSeats =
+      let availableSeats =
         response.data.viewer.showtime.seatingLayout.seats.filter(
           (s) =>
             s.available &&
             s.seatStatus !== 'Sold' &&
             s.type !== 'NotASeat' &&
             s.type !== 'Wheelchair' &&
+            s.type !== 'Companion' &&
             IMAX_ROWS.includes(s.name[0])
         );
+
+      availableSeats = availableSeats.filter((s) => {
+        // must be at least 2 seats in the same row, which is the first character in the seat name
+        const row = s.name[0];
+        const rowSeats = availableSeats.filter((s) => s.name[0] === row);
+
+        return rowSeats.length >= MIN_AVAILABLE_SEATS;
+      });
 
       const label = `${response.data.viewer.showtime.movie.name} - ${response.data.viewer.showtime.display.date} at ${response.data.viewer.showtime.display.time}${response.data.viewer.showtime.display.amPm}`;
 
