@@ -9,9 +9,9 @@ cron.schedule(`*/1 * * * *`, async () => {
   await sevenrooms.check();
 });
 
-cron.schedule(`*/1 * * * *`, async () => {
-  await amc.check();
-});
+// cron.schedule(`*/1 * * * *`, async () => {
+//   await amc.check();
+// });
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -24,6 +24,10 @@ app.get('/sevenrooms', async (req: Request, res: Response) => {
 app.get('/amc', async (req: Request, res: Response) => {
   const status = amc.getStatusMessage();
   res.send(status);
+});
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('OK');
 });
 
 app.listen(port, async () => {
