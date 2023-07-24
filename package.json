@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "dev": "NODE_ENV=development tsx watch src/dev.ts"
   },
   "prettier": {
     "printWidth": 80,
@@ -25,6 +26,7 @@
     "express": "^4.18.2",
     "node-cron": "^3.0.2",
     "tsx": "^3.12.7",
-    "twilio": "^4.13.0"
+    "twilio": "^4.13.0",
+    "zod": "^3.21.4"
   }
 }
