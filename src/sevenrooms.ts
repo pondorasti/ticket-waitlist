@@ -10,6 +10,8 @@ const DATE_STR = '09-02-2023';
 const TIME_SLOT = '19:00';
 const PARTY_SIZE = 2;
 const HALO_SIZE_HRS = 2; // check +/- on either side of TIME_SLOT
+const BOOKING_URL =
+  'https://www.gordonramsayrestaurants.com/en/us/hells-kitchen/locations/washington-dc';
 
 // wait until getting this many consecutive errors before creating an error state
 const MIN_ERROR_COUNT = 4;
@@ -17,7 +19,7 @@ const MIN_ERROR_COUNT = 4;
 // Don't send more than one text every const TEXT_MAX_FREQUENCY_MINS mins.
 const TEXT_MAX_FREQUENCY_MINS = 30;
 const TWILIO_FROM_NUMBER = '+18335631518';
-const TWILIO_TO_NUMBER = '+18144107394';
+const TWILIO_TO_NUMBERS = ['+18144107394', '+18146911664'];
 
 /**
  * You probably don't need to change anything below this line.
@@ -153,7 +155,7 @@ export async function check() {
     day: 'numeric',
   });
 
-  STATUS_MESSAGE = `Reservations available for ${VENUE_NAME} on ${prettyDateStr} at ${availableTimes}.`;
+  STATUS_MESSAGE = `🍽️ Reservations available for ${VENUE_NAME} on ${prettyDateStr} at ${availableTimes}.\n\n${BOOKING_URL} .`;
 
   console.log(STATUS_MESSAGE);
 
@@ -167,21 +169,23 @@ export async function check() {
     return;
   }
 
-  try {
-    const client = twilio(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN
-    );
+  const client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
 
-    await client.messages.create({
-      body: STATUS_MESSAGE,
-      to: TWILIO_TO_NUMBER,
-      from: TWILIO_FROM_NUMBER,
-    });
-
-    LAST_TEXT_SENT_AT = Date.now();
-  } catch (error) {
-    console.error(`Error sending message to ${TWILIO_TO_NUMBER}: ${error}`);
-    ERROR = true;
+  for (const to of TWILIO_TO_NUMBERS) {
+    try {
+      await client.messages.create({
+        to,
+        body: STATUS_MESSAGE,
+        from: TWILIO_FROM_NUMBER,
+      });
+    } catch (error) {
+      console.error(`Error sending message to ${to}: ${error}`);
+      ERROR = true;
+    }
   }
+
+  LAST_TEXT_SENT_AT = Date.now();
 }
