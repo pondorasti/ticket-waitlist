@@ -83,6 +83,7 @@ let STATUS_MESSAGE = 'NO_SEATS';
 let LAST_TEXT_SENT_AT = 0;
 let ERROR_COUNT = 0;
 let ERROR = false;
+let AVAILABLE_SEATS: string[] = [];
 
 export function getStatusMessage() {
   return ERROR ? 'ERROR' : STATUS_MESSAGE;
@@ -90,6 +91,7 @@ export function getStatusMessage() {
 
 export async function check() {
   SHOWTIMES_WITH_SEATS = [];
+  AVAILABLE_SEATS = [];
   ERROR = false;
   STATUS_MESSAGE = 'NO_SEATS';
   let response: AMC_Response;
@@ -123,6 +125,8 @@ export async function check() {
 
         return rowSeats.length >= MIN_AVAILABLE_SEATS;
       });
+
+      AVAILABLE_SEATS = availableSeats.map((s) => s.name);
 
       const label = `${response.data.viewer.showtime.movie.name} - ${response.data.viewer.showtime.display.date} at ${response.data.viewer.showtime.display.time}${response.data.viewer.showtime.display.amPm}`;
 
@@ -175,7 +179,9 @@ export async function check() {
     return;
   }
 
-  STATUS_MESSAGE = `Seats available for ${SHOWTIMES_WITH_SEATS.join(', ')}`;
+  STATUS_MESSAGE = `Seats available for ${SHOWTIMES_WITH_SEATS.join(
+    ', '
+  )}: ${AVAILABLE_SEATS.join(', ')}`;
 
   // Don't send a text if one was sent in the last 30 minutes
   if (Date.now() - LAST_TEXT_SENT_AT < TEXT_MAX_FREQUENCY) {
