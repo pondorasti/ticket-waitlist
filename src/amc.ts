@@ -9,8 +9,9 @@ import twilio from 'twilio';
 const SHOWTIMES = [
   // 111490819, // Oppenheimer Thursday 5pm
   // 111490820, // Oppenheimer Thursday 9:45pm
-  111442606, // Oppenheimer Tuesday 8:15pm
-  111442603, // Oppenheimer Wednesday 8:15pm
+  // 111442606, // Oppenheimer Tuesday 8:15pm
+  // 111442603, // Oppenheimer Wednesday 8:15pm
+  111442615, // Oppenheimer Monday 7/31 8:15pm
 
   // can use this for testing
   // 111717815, // Oppenheimer Thursday laser
