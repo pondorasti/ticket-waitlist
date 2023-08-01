@@ -9,9 +9,9 @@ cron.schedule(`*/1 * * * *`, async () => {
   await sevenrooms.check();
 });
 
-cron.schedule(`*/1 * * * *`, async () => {
-  await amc.check();
-});
+// cron.schedule(`*/1 * * * *`, async () => {
+//   await amc.check();
+// });
 
 const app = express();
 const port = process.env.PORT || 3333;
