@@ -3,6 +3,7 @@
   "include": ["src", "types"],
   "compilerOptions": {
     "module": "NodeNext",
-    "noEmit": true
+    "noEmit": false,
+    "outDir": "dist"
   }
 }

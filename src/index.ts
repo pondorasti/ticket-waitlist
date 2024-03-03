@@ -4,14 +4,12 @@ import cron from 'node-cron';
 import express, { Request, Response } from 'express';
 import * as sevenrooms from './sevenrooms';
 import * as amc from './amc';
+import * as gametime from './gametime';
+import * as seatgeek from './seatgeek';
 
 cron.schedule(`*/1 * * * *`, async () => {
-  await sevenrooms.check();
+  await amc.check();
 });
-
-// cron.schedule(`*/1 * * * *`, async () => {
-//   await amc.check();
-// });
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -23,6 +21,16 @@ app.get('/sevenrooms', async (req: Request, res: Response) => {
 
 app.get('/amc', async (req: Request, res: Response) => {
   const status = amc.getStatusMessage();
+  res.send(status);
+});
+
+app.get('/gametime', async (req: Request, res: Response) => {
+  const status = gametime.getStatusMessage();
+  res.send(status);
+});
+
+app.get('/seatgeek', async (req: Request, res: Response) => {
+  const status = seatgeek.getStatusMessage();
   res.send(status);
 });
 
