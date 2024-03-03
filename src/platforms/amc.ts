@@ -1,7 +1,6 @@
 import z from 'zod';
-import { sendPushAlert } from './alerts';
-
-require('dotenv').config();
+import { sendPushAlert } from '../alerts';
+import env from '../env';
 
 /**
  * Configuration
@@ -99,6 +98,10 @@ export async function check() {
   AVAILABLE_SEATS = [];
   ERROR = false;
   STATUS_MESSAGE = 'NO_SEATS';
+
+  if (env.NODE_ENV === 'development') {
+    console.log('Checking for seats...');
+  }
 
   for (const showtimeId of SHOWTIMES) {
     try {

@@ -1,4 +1,5 @@
 import twilio from 'twilio';
+import env from './env';
 
 const TWILIO_FROM_NUMBER = '+18335631518';
 const TWILIO_TO_NUMBER = '+18144107394';
@@ -15,8 +16,8 @@ export async function sendPushAlert({
 }) {
   const formData = new FormData();
 
-  formData.append('token', process.env.PUSHOVER_TOKEN as string);
-  formData.append('user', process.env.PUSHOVER_USER as string);
+  formData.append('token', env.PUSHOVER_TOKEN);
+  formData.append('user', env.PUSHOVER_USER);
   formData.append('message', message);
   formData.append('title', 'Ticket Alerts');
   if (url) formData.append('url', url);
@@ -31,11 +32,13 @@ export async function sendPushAlert({
 
 // note: does not work; needs updated to use the consts
 export async function sendTwilioAlert({ message }: { message: string }) {
+  if (!env.TWILIO_ACCOUNT_SID || !env.TWILIO_AUTH_TOKEN) {
+    console.error('TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are required');
+    return;
+  }
+
   try {
-    const client = twilio(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN
-    );
+    const client = twilio(env.TWILIO_ACCOUNT_SID, env.TWILIO_AUTH_TOKEN);
 
     await client.messages.create({
       body: message,

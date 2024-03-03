@@ -1,15 +1,17 @@
-require('dotenv').config();
-
 import cron from 'node-cron';
 import express, { Request, Response } from 'express';
-import * as sevenrooms from './sevenrooms';
-import * as amc from './amc';
-import * as gametime from './gametime';
-import * as seatgeek from './seatgeek';
+import * as sevenrooms from './platforms/sevenrooms';
+import * as amc from './platforms/amc';
+import * as gametime from './platforms/gametime';
+import * as seatgeek from './platforms/seatgeek';
+import env from './env';
+
+const activeChecker = amc;
 
 cron.schedule(`*/1 * * * *`, async () => {
-  await amc.check();
+  await activeChecker.check();
 });
+activeChecker.check();
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -38,6 +40,8 @@ app.get('/', (req: Request, res: Response) => {
   res.send('OK');
 });
 
-app.listen(port, async () => {
-  console.log('Server is running on port', port);
-});
+if (env.NODE_ENV === 'production') {
+  app.listen(port, async () => {
+    console.log('Server is running on port', port);
+  });
+}
