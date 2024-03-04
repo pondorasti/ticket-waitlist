@@ -204,13 +204,13 @@ export async function check() {
 
   // Don't send a text if one was sent in the last 30 minutes
   if (Date.now() - LAST_TEXT_SENT_AT < TEXT_MAX_FREQUENCY) {
-    console.log('Text already sent today');
+    console.log('Text already sent within the last 30 minutes');
     return;
   }
 
-  const pushRes = await sendPushAlert({
+  LAST_TEXT_SENT_AT = Date.now();
+
+  await sendPushAlert({
     message: STATUS_MESSAGE,
   });
-
-  console.log(pushRes);
 }
