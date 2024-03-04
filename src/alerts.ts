@@ -1,11 +1,8 @@
 import twilio from 'twilio';
 import env from './env';
 
-const TWILIO_FROM_NUMBER = '+18335631518';
-const TWILIO_TO_NUMBER = '+18144107394';
-
 // https://pushover.net/api
-export async function sendPushAlert({
+export async function sendPushoverAlert({
   message,
   url,
   url_title,
@@ -36,8 +33,18 @@ export async function sendPushAlert({
 }
 
 // note: does not work; needs updated to use the consts
-export async function sendTwilioAlert({ message }: { message: string }) {
-  if (!env.TWILIO_ACCOUNT_SID || !env.TWILIO_AUTH_TOKEN) {
+export async function sendTwilioAlert({
+  to,
+  message,
+}: {
+  to: string;
+  message: string;
+}) {
+  if (
+    !env.TWILIO_ACCOUNT_SID ||
+    !env.TWILIO_AUTH_TOKEN ||
+    !env.TWILIO_FROM_NUMBER
+  ) {
     console.error('TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are required');
     return;
   }
@@ -47,13 +54,30 @@ export async function sendTwilioAlert({ message }: { message: string }) {
 
     await client.messages.create({
       body: message,
-      to: TWILIO_TO_NUMBER,
-      from: TWILIO_FROM_NUMBER,
+      to,
+      from: env.TWILIO_FROM_NUMBER,
     });
 
     // LAST_TEXT_SENT_AT = Date.now();
   } catch (error) {
-    console.error(`Error sending message to ${TWILIO_TO_NUMBER}: ${error}`);
+    console.error(`Error sending message to ${to}: ${error}`);
     // ERROR = true;
+  }
+}
+
+export async function sendPushAlert({
+  to,
+  mode,
+  message,
+}: {
+  mode: 'sms' | 'pushover';
+  message: string;
+  to: string;
+}) {
+  switch (mode) {
+    case 'sms':
+      return sendTwilioAlert({ to, message });
+    case 'pushover':
+      return sendPushoverAlert({ message });
   }
 }

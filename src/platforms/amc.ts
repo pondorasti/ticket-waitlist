@@ -6,14 +6,26 @@ import env from '../env';
  * Configuration
  */
 
+const TO_PHONE_NUMBER = '+18144107394';
+
 const SHOWTIMES = [
-  118463064, // Dune 2 - Sunday 7pm
-  118463037, // Dune 2 - Tuesday 6pm
-  118463040, // Dune 2 - Wednesday 6pm
-  118463043, // Dune 2 - Thursday 6pm
-  118463048, // Dune 2 - Friday 3:15pm
-  118463049, // Dune 2 - Friday 7pm
-  118463045, // Dune 2 - Sunday 6:45pm
+  // 118463064, // Dune 2 - Sunday 7pm
+  // 118463037, // Dune 2 - Tuesday 6pm
+  // 118463040, // Dune 2 - Wednesday 6pm
+  // 118463043, // Dune 2 - Thursday 6pm
+  // 118463048, // Dune 2 - Friday 3:15pm
+  // 118463049, // Dune 2 - Friday 7pm
+  // 118463045, // Dune 2 - Sunday 6:45pm
+
+  // AMC Metreon 16
+  118430979, // Dune 2 - Monday 6pm
+  118430981, // Dune 2 - Tuesday 6pm
+  118430983, // Dune 2 - Wednesday 6pm
+  118430985, // Dune 2 - Thursday 6pm
+  118430987, // Dune 2 - Friday 6pm
+  118430989, // Dune 2 - Saturday 6pm
+  118430991, // Dune 2 - Sunday 6pm
+  118785160, // Dune 2 - Monday 7pm
 ];
 
 // we won't check if they're next to each other, but also won't alert if there's only one seat available
@@ -28,13 +40,12 @@ const MIN_ERROR_COUNT = 4;
 const TEXT_MAX_FREQUENCY = 1000 * 60 * 30; // 30 minutes
 
 // seat names are H12, H13, etc.
-// this is only guaranteed to work for the AMC CityWalk IMAX theater,
-// I don't want to sit any further down than this
-const IMAX_ROWS = ['G', 'H', 'J', 'K', 'L', 'M', 'N'];
+// const IMAX_ROWS = ['G', 'H', 'J', 'K', 'L', 'M', 'N']; // AMC CityWalk 19
+const IMAX_ROWS = ['F', 'G', 'H', 'J', 'K', 'L', 'M']; // AMC Metreon 16
 
 // avoid seats on the ends
-const SEAT_NUM_MIN = 6;
-const SEAT_NUM_MAX = 26;
+const SEAT_NUM_MIN = 4;
+const SEAT_NUM_MAX = 32;
 
 /**
  * You probably don't need to change anything below this line
@@ -123,9 +134,6 @@ export async function check() {
       if (!res.success) {
         console.log('error parsing response');
         console.log(res);
-        await sendPushAlert({
-          message: 'Error parsing AMC response; check logs',
-        });
         return;
       }
 
@@ -217,6 +225,8 @@ export async function check() {
   LAST_TEXT_SENT_AT = Date.now();
 
   await sendPushAlert({
+    mode: 'sms',
     message: STATUS_MESSAGE,
+    to: TO_PHONE_NUMBER,
   });
 }
