@@ -32,6 +32,10 @@ const TEXT_MAX_FREQUENCY = 1000 * 60 * 30; // 30 minutes
 // I don't want to sit any further down than this
 const IMAX_ROWS = ['G', 'H', 'J', 'K', 'L', 'M', 'N'];
 
+// avoid seats on the ends
+const SEAT_NUM_MIN = 6;
+const SEAT_NUM_MAX = 26;
+
 /**
  * You probably don't need to change anything below this line
  */
@@ -68,7 +72,7 @@ const outputSchema = z.object({
                 'Wheelchair',
                 'Companion',
               ]),
-              name: z.string(),
+              name: z.string(), // e.g. A24
               seatStatus: z.string(),
             })
           ),
@@ -134,7 +138,9 @@ export async function check() {
           s.type !== 'NotASeat' &&
           s.type !== 'Wheelchair' &&
           s.type !== 'Companion' &&
-          IMAX_ROWS.includes(s.name[0])
+          IMAX_ROWS.includes(s.name[0]) &&
+          Number(s.name.slice(1)) >= SEAT_NUM_MIN &&
+          Number(s.name.slice(1)) <= SEAT_NUM_MAX
       );
 
       availableSeats = availableSeats.filter((s) => {

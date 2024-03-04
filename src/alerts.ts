@@ -14,6 +14,11 @@ export async function sendPushAlert({
   url?: string;
   url_title?: string;
 }) {
+  if (env.NODE_ENV === 'development') {
+    console.log('Skipping push alert in development');
+    return;
+  }
+
   const formData = new FormData();
 
   formData.append('token', env.PUSHOVER_TOKEN);
