@@ -18,7 +18,6 @@ const SHOWTIMES = [
   // 118463045, // Dune 2 - Sunday 6:45pm
 
   // AMC Metreon 16
-  118430979, // Dune 2 - Monday 6pm
   118430981, // Dune 2 - Tuesday 6pm
   118430983, // Dune 2 - Wednesday 6pm
   118430985, // Dune 2 - Thursday 6pm
@@ -214,7 +213,7 @@ export async function check() {
 
   STATUS_MESSAGE = `Seats available for ${SHOWTIMES_WITH_SEATS.join(
     ', '
-  )}: ${AVAILABLE_SEATS.join(', ')}`;
+  )}: ${AVAILABLE_SEATS.join(', ')}. Visit the AMC app now to book.`;
 
   // Don't send a text if one was sent in the last 30 minutes
   if (Date.now() - LAST_TEXT_SENT_AT < TEXT_MAX_FREQUENCY) {
@@ -225,8 +224,13 @@ export async function check() {
   LAST_TEXT_SENT_AT = Date.now();
 
   await sendPushAlert({
-    mode: 'sms',
+    mode: 'pushover',
     message: STATUS_MESSAGE,
-    to: TO_PHONE_NUMBER,
   });
+
+  // await sendPushAlert({
+  //   mode: 'sms',
+  //   message: STATUS_MESSAGE,
+  //   to: TO_PHONE_NUMBER,
+  // });
 }

@@ -2,17 +2,16 @@ import twilio from 'twilio';
 import env from './env';
 
 // https://pushover.net/api
-export async function sendPushoverAlert({
-  message,
-  url,
-  url_title,
-}: {
-  message: string;
-  url?: string;
-  url_title?: string;
-}) {
+export async function sendPushoverAlert({ message }: { message: string }) {
   if (env.NODE_ENV === 'development') {
     console.log('Skipping push alert in development');
+    return;
+  }
+
+  if (!env.PUSHOVER_TOKEN || !env.PUSHOVER_USER) {
+    console.error(
+      'PUSHOVER_TOKEN and PUSHOVER_USER are required to use the Pushover notification service'
+    );
     return;
   }
 
@@ -22,8 +21,6 @@ export async function sendPushoverAlert({
   formData.append('user', env.PUSHOVER_USER);
   formData.append('message', message);
   formData.append('title', 'Ticket Alerts');
-  if (url) formData.append('url', url);
-  if (url_title) formData.append('url_title', url_title);
 
   // send push alert with Pushover
   return fetch('https://api.pushover.net/1/messages.json', {
@@ -45,23 +42,23 @@ export async function sendTwilioAlert({
     !env.TWILIO_AUTH_TOKEN ||
     !env.TWILIO_FROM_NUMBER
   ) {
-    console.error('TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are required');
+    console.error(
+      'TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are required to use the Twilio notification service'
+    );
     return;
   }
 
   try {
     const client = twilio(env.TWILIO_ACCOUNT_SID, env.TWILIO_AUTH_TOKEN);
 
-    await client.messages.create({
+    const res = await client.messages.create({
       body: message,
       to,
       from: env.TWILIO_FROM_NUMBER,
     });
-
-    // LAST_TEXT_SENT_AT = Date.now();
+    console.log(res);
   } catch (error) {
     console.error(`Error sending message to ${to}: ${error}`);
-    // ERROR = true;
   }
 }
 
@@ -72,10 +69,14 @@ export async function sendPushAlert({
 }: {
   mode: 'sms' | 'pushover';
   message: string;
-  to: string;
+  to?: string;
 }) {
   switch (mode) {
     case 'sms':
+      if (!to) {
+        console.error('sendPushAlert: to is required for SMS alerts');
+        return;
+      }
       return sendTwilioAlert({ to, message });
     case 'pushover':
       return sendPushoverAlert({ message });

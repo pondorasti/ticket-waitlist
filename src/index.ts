@@ -8,10 +8,13 @@ import env from './env';
 
 const activeChecker = amc;
 
-cron.schedule(`*/1 * * * *`, async () => {
-  await activeChecker.check();
-});
-activeChecker.check();
+if (env.NODE_ENV === 'production') {
+  cron.schedule(`*/1 * * * *`, async () => {
+    await activeChecker.check();
+  });
+} else {
+  activeChecker.check();
+}
 
 const app = express();
 const port = process.env.PORT || 3333;
