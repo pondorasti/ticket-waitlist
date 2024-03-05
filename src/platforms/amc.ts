@@ -28,7 +28,7 @@ const SHOWTIMES = [
 ];
 
 // we won't check if they're next to each other, but also won't alert if there's only one seat available
-const MIN_AVAILABLE_SEATS = 2;
+const MIN_AVAILABLE_SEATS = 1;
 
 // idk if rate limiting is a thing, but let's not test it
 const WAIT_BETWEEN_CHECKS = 3000;
@@ -40,7 +40,7 @@ const TEXT_MAX_FREQUENCY = 1000 * 60 * 30; // 30 minutes
 
 // seat names are H12, H13, etc.
 // const IMAX_ROWS = ['G', 'H', 'J', 'K', 'L', 'M', 'N']; // AMC CityWalk 19
-const IMAX_ROWS = ['F', 'G', 'H', 'J', 'K', 'L', 'M']; // AMC Metreon 16
+const IMAX_ROWS = ['D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M']; // AMC Metreon 16
 
 // avoid seats on the ends
 const SEAT_NUM_MIN = 4;
@@ -226,6 +226,12 @@ export async function check() {
   await sendPushAlert({
     mode: 'pushover',
     message: STATUS_MESSAGE,
+    to: 'uDH8CPnmarnnoGSqjQ1TcrAuyJoj8V',
+  });
+  await sendPushAlert({
+    mode: 'pushover',
+    message: STATUS_MESSAGE,
+    to: 'uDH8CPnmarnnoGSqjQ1TcrAuyJoj8V',
   });
 
   // await sendPushAlert({

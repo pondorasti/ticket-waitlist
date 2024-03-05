@@ -2,13 +2,19 @@ import twilio from 'twilio';
 import env from './env';
 
 // https://pushover.net/api
-export async function sendPushoverAlert({ message }: { message: string }) {
+export async function sendPushoverAlert({
+  to,
+  message,
+}: {
+  to: string;
+  message: string;
+}) {
   if (env.NODE_ENV === 'development') {
     console.log('Skipping push alert in development');
-    return;
+    // return;
   }
 
-  if (!env.PUSHOVER_TOKEN || !env.PUSHOVER_USER) {
+  if (!env.PUSHOVER_TOKEN) {
     console.error(
       'PUSHOVER_TOKEN and PUSHOVER_USER are required to use the Pushover notification service'
     );
@@ -18,7 +24,7 @@ export async function sendPushoverAlert({ message }: { message: string }) {
   const formData = new FormData();
 
   formData.append('token', env.PUSHOVER_TOKEN);
-  formData.append('user', env.PUSHOVER_USER);
+  formData.append('user', to);
   formData.append('message', message);
   formData.append('title', 'Ticket Alerts');
 
@@ -69,7 +75,7 @@ export async function sendPushAlert({
 }: {
   mode: 'sms' | 'pushover';
   message: string;
-  to?: string;
+  to: string;
 }) {
   switch (mode) {
     case 'sms':
@@ -79,6 +85,6 @@ export async function sendPushAlert({
       }
       return sendTwilioAlert({ to, message });
     case 'pushover':
-      return sendPushoverAlert({ message });
+      return sendPushoverAlert({ to, message });
   }
 }
