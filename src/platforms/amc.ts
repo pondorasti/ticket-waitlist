@@ -18,7 +18,6 @@ const SHOWTIMES = [
   // 118463045, // Dune 2 - Sunday 6:45pm
 
   // AMC Metreon 16
-  118430981, // Dune 2 - Tuesday 6pm
   118430983, // Dune 2 - Wednesday 6pm
   118430985, // Dune 2 - Thursday 6pm
   118430987, // Dune 2 - Friday 6pm
