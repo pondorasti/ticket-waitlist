@@ -1,3 +1,5 @@
+# 🎫 Ticket Waitlist
+
 This is a collection of scripts that I've created to poll for open reservations on various ticketing platforms. Inside `src/platforms` you'll find scripts for AMC (movies), Gametime (sports), SeatGeek (sports), and SevenRooms (restaurants).
 
 The AMC and SevenRooms scripts are intended to watch sold-out events and alert about openings, while the SeatGeek and Gametime scripts track prices and alert about price drops.
