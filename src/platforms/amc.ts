@@ -6,9 +6,11 @@ import env from '../env';
  * Configuration
  */
 
-const TO_PHONE_NUMBER = '+18144107394';
+// get the showtimeId from the end of the URL. example:
+// https://www.amctheatres.com/movies/dune-part-two-68123/showtimes/dune-part-two-68123/2024-03-04/amc-metreon-16/all/118430979
 
 const SHOWTIMES = [
+  // AMC CityWalk 19
   // 118463064, // Dune 2 - Sunday 7pm
   // 118463037, // Dune 2 - Tuesday 6pm
   // 118463040, // Dune 2 - Wednesday 6pm
@@ -26,7 +28,7 @@ const SHOWTIMES = [
   118785160, // Dune 2 - Monday 7pm
 ];
 
-// we won't check if they're next to each other, but also won't alert if there's only one seat available
+// we won't check if they're next to each other, but we'll check if they're in the same row
 const MIN_AVAILABLE_SEATS = 2;
 
 // idk if rate limiting is a thing, but let's not test it
@@ -35,11 +37,12 @@ const WAIT_BETWEEN_CHECKS = 3000;
 // wait until getting this many consecutive errors before creating an error state
 const MIN_ERROR_COUNT = 4;
 
-const TEXT_MAX_FREQUENCY = 1000 * 60 * 30; // 30 minutes
+// don't send more than one alert within 30 minutes
+const TEXT_MAX_FREQUENCY = 1000 * 60 * 30;
 
 // seat names are H12, H13, etc.
-// const IMAX_ROWS = ['G', 'H', 'J', 'K', 'L', 'M', 'N']; // AMC CityWalk 19
-const IMAX_ROWS = ['F', 'G', 'H', 'J', 'K', 'L', 'M']; // AMC Metreon 16
+// const DESIRABLE_ROWS = ['G', 'H', 'J', 'K', 'L', 'M', 'N']; // AMC CityWalk 19
+const DESIRABLE_ROWS = ['F', 'G', 'H', 'J', 'K', 'L', 'M']; // AMC Metreon 16
 
 // avoid seats on the ends
 const SEAT_NUM_MIN = 4;
@@ -144,7 +147,7 @@ export async function check() {
           s.type !== 'NotASeat' &&
           s.type !== 'Wheelchair' &&
           s.type !== 'Companion' &&
-          IMAX_ROWS.includes(s.name[0]) &&
+          DESIRABLE_ROWS.includes(s.name[0]) &&
           Number(s.name.slice(1)) >= SEAT_NUM_MIN &&
           Number(s.name.slice(1)) <= SEAT_NUM_MAX
       );
@@ -225,12 +228,5 @@ export async function check() {
   await sendPushAlert({
     mode: 'pushover',
     message: STATUS_MESSAGE,
-    to: 'uDH8CPnmarnnoGSqjQ1TcrAuyJoj8V',
   });
-
-  // await sendPushAlert({
-  //   mode: 'sms',
-  //   message: STATUS_MESSAGE,
-  //   to: TO_PHONE_NUMBER,
-  // });
 }

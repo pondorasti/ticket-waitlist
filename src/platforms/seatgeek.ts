@@ -1,10 +1,14 @@
 import z from 'zod';
-import twilio from 'twilio';
+import { sendPushAlert } from '../alerts';
 
 /**
  * Configure these values to your liking.
  */
-// const EVENT_ID = '64de74ca2d4ca900013dffc6';
+
+// idk how much of this URL is necessary and whether any of it changes the results, I copied it from the network tab.
+// most of these seem like analytics stuff, a few probably opt you into certain tests
+// (e.g. zone_deals_true_v4, cost_plus_v0, control_v1)
+const EVENT_URL = `https://seatgeek.com/api/event_listings_v2?_include_seats=1&client_id=MTY2MnwxMzgzMzIwMTU4&event_page_view_id=6aed535e-d38b-43ea-8b72-3309062c1ef3&id=6120063&sixpack_client_id=069d73a8-6543-40a4-b68d-faf9d4c8787f`;
 const PLATFORM_NAME = 'SeatGeek';
 const EVENT_NAME = 'Lakers vs. Suns (SeatGeek)';
 const SEATS_TOGETHER = 2;
@@ -17,8 +21,6 @@ const MIN_ERROR_COUNT = 4;
 
 // Don't send more than one text every const TEXT_MAX_FREQUENCY_MINS mins.
 const TEXT_MAX_FREQUENCY_MINS = 15;
-const TWILIO_FROM_NUMBER = '+18335631518';
-const TWILIO_TO_NUMBERS = ['+18144107394'];
 
 /**
  * You probably don't need to change anything below this line.
@@ -61,17 +63,12 @@ const fmtPrice = (price: number) =>
     maximumFractionDigits: 0,
   });
 
-// idk how much of this URL is necessary and whether any of it changes the results, I copied it from the network tab
-// most of these seem like analytics stuff, a few probably opt you into certain tests
-// (e.g. zone_deals_true_v4, cost_plus_v0, control_v1)
-const fullUrl = `https://seatgeek.com/api/event_listings_v2?_include_seats=1&client_id=MTY2MnwxMzgzMzIwMTU4&event_page_view_id=6aed535e-d38b-43ea-8b72-3309062c1ef3&id=6120063&sixpack_client_id=069d73a8-6543-40a4-b68d-faf9d4c8787f`;
-
 export async function check() {
   AVAILABLE_SEATS = [];
   STATUS_MESSAGE = 'NO_SEATS';
   ERROR = false;
 
-  const response = await fetch(fullUrl).then((res) => res.json());
+  const response = await fetch(EVENT_URL).then((res) => res.json());
 
   try {
     const res = outputSchema.safeParse(response);
@@ -185,28 +182,10 @@ export async function check() {
     return;
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log(STATUS_MESSAGE + '\n\n\n');
-    return;
-  }
-
-  const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
-
-  for (const to of TWILIO_TO_NUMBERS) {
-    try {
-      await client.messages.create({
-        to,
-        body: STATUS_MESSAGE,
-        from: TWILIO_FROM_NUMBER,
-      });
-    } catch (error) {
-      console.error(`Error sending message to ${to}: ${error}`);
-      ERROR = true;
-    }
-  }
-
   LAST_TEXT_SENT_AT = Date.now();
+
+  await sendPushAlert({
+    mode: 'pushover',
+    message: STATUS_MESSAGE,
+  });
 }

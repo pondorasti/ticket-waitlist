@@ -1,5 +1,5 @@
 import z from 'zod';
-import twilio from 'twilio';
+import { sendPushAlert } from '../alerts';
 
 /**
  * Configure these values to your liking.
@@ -18,8 +18,6 @@ const MIN_ERROR_COUNT = 4;
 
 // Don't send more than one text every const TEXT_MAX_FREQUENCY_MINS mins.
 const TEXT_MAX_FREQUENCY_MINS = 30;
-const TWILIO_FROM_NUMBER = '+18335631518';
-const TWILIO_TO_NUMBERS = ['+18144107394', '+18146911664'];
 
 /**
  * You probably don't need to change anything below this line.
@@ -165,27 +163,10 @@ export async function check() {
     return;
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    return;
-  }
-
-  const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
-
-  for (const to of TWILIO_TO_NUMBERS) {
-    try {
-      await client.messages.create({
-        to,
-        body: STATUS_MESSAGE,
-        from: TWILIO_FROM_NUMBER,
-      });
-    } catch (error) {
-      console.error(`Error sending message to ${to}: ${error}`);
-      ERROR = true;
-    }
-  }
-
   LAST_TEXT_SENT_AT = Date.now();
+
+  await sendPushAlert({
+    mode: 'pushover',
+    message: STATUS_MESSAGE,
+  });
 }
