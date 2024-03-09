@@ -47,4 +47,8 @@ if (env.NODE_ENV === 'production') {
   app.listen(port, async () => {
     console.log('Server is running on port', port);
   });
+} else {
+  console.log(
+    '⚠️ Warning: not sending push alerts in development; results will be logged here instead'
+  );
 }
