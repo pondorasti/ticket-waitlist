@@ -20,19 +20,22 @@ const SHOWTIMES = [
   // 118463045, // Dune 2 - Sunday 6:45pm
 
   // AMC Metreon 16
-  118430983, // Dune 2 - Wednesday 6pm
-  118430985, // Dune 2 - Thursday 6pm
-  118430987, // Dune 2 - Friday 6pm
-  118430989, // Dune 2 - Saturday 6pm
-  118430991, // Dune 2 - Sunday 6pm
-  118785160, // Dune 2 - Monday 7pm
+  118785163, // Dune 2 - 16th, Saturday 6pm
+  118785166, // Dune 2 - 17th, Sunday 6pm
+  118785169, // Dune 2 - 18th, Monday 6pm
+  118785172, // Dune 2 - 19th, Tuesday 6pm
+  119582993, // Dune 2 - 20th, Wednesday 6pm
+  119582997, // Dune 2 - 21st, Thursday 6pm
+  119582965, // Dune 2 - 22nd, Friday 6pm
+  119582969, // Dune 2 - 23rd, Saturday 6pm
+  119582973, // Dune 2 - 24th, Sunday 6pm
 ];
 
 // we won't check if they're next to each other, but we'll check if they're in the same row
 const MIN_AVAILABLE_SEATS = 2;
 
 // idk if rate limiting is a thing, but let's not test it
-const WAIT_BETWEEN_CHECKS = 3000;
+const WAIT_BETWEEN_CHECKS = 3000; // ms
 
 // wait until getting this many consecutive errors before creating an error state
 const MIN_ERROR_COUNT = 4;
@@ -45,8 +48,8 @@ const TEXT_MAX_FREQUENCY = 1000 * 60 * 30;
 const DESIRABLE_ROWS = ['F', 'G', 'H', 'J', 'K', 'L', 'M']; // AMC Metreon 16
 
 // avoid seats on the ends
-const SEAT_NUM_MIN = 4;
-const SEAT_NUM_MAX = 32;
+const SEAT_NUM_MIN = 5;
+const SEAT_NUM_MAX = 30;
 
 /**
  * You probably don't need to change anything below this line
